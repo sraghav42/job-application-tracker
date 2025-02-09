@@ -24,5 +24,6 @@ class JobApplication(Base):
     status=Column(String,default="Applied")
     applied_at=Column(DateTime,default=datetime.datetime.utcnow)
     user_id=Column(Integer,ForeignKey("users.id"))
+    req_id=Column(String,nullable=True)
 
     user=relationship("User",back_populates="applications")
