@@ -10,11 +10,11 @@ class JobApplicationCreate(BaseModel):
     req_id:Optional[str]=None
 
     class Config:
-        orm_mode=True
+        from_attributes=True
 
 
 class JobApplicationUpdate(BaseModel):
     status:Optional[str]=None
 
     class Config:
-        orm_mode=True
+        from_attributes=True
