@@ -2,3 +2,4 @@ venv/
 __pycach__/
 .env
 node_modules/
+uploaded_resumes/

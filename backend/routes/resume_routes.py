@@ -5,31 +5,35 @@ import os
 
 router = APIRouter(prefix="/resume", tags=["Resume Parsing"])
 
-UPLOAD_DIR = "/Coding Projects/job-application-tracker/uploaded_resumes/"
+UPLOAD_DIR = "uploaded_resumes"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/upload/")
 async def upload_resume(file: UploadFile = File(...)):
-    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    try:
+        file_path = os.path.join(UPLOAD_DIR, file.filename)
+        print(file_path)
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-    # Get file extension
-    file_ext = file.filename.split(".")[-1].lower()
+        # Get file extension
+        file_ext = file.filename.split(".")[-1].lower()
 
-    # Process based on file type
-    if file_ext == "pdf":
-        extracted_text = rp.extract_text_from_pdf(file_path)
-    elif file_ext in ["doc", "docx"]:
-        extracted_text = rp.extract_text_from_docx(file_path)
-    else:
-        raise HTTPException(status_code=400, detail="Unsupported file format")
+        # Process based on file type
+        if file_ext == "pdf":
+            extracted_text = rp.extract_text_from_pdf(file_path)
+        elif file_ext in ["doc", "docx"]:
+            extracted_text = rp.extract_text_from_docx(file_path)
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported file format")
 
-    parsed_data=rp.parse_resume(extracted_text)
+        parsed_data=rp.parse_resume(extracted_text)
 
-    return {
-        "message": "File uploaded and processed successfully",
-        "filename": file.filename,
-        "parsed_data": parsed_data,
-    }
+        return {
+            "message": "File uploaded and processed successfully",
+            "filename": file.filename,
+            "parsed_data": parsed_data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=str(e))
